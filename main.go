@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/exec"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Workspace struct {
@@ -76,24 +76,46 @@ func Render() {
 	})
 
 	allWs := ""
+totalWs := len(workspaces)
+lastId := workspaces[totalWs-1].Id
 
-	for _, ws := range workspaces {
-		if activeWs == ws.Id {
-    	allWs += fmt.Sprintf("● ")
-		} else {
-    		allWs += fmt.Sprintf("○ ")
+for _, ws := range workspaces {
+    isLast := ws.Id == lastId
+    isActive := activeWs == ws.Id
+
+    if totalWs == 1 {
+        allWs += "●"
+    } else if isActive {
+        if isLast {
+            allWs += "●"
+        } else {
+            allWs += "● "
+        }
+    } else {
+        if isLast {
+            allWs += "○"
+        } else {
+            allWs += "○ "
+        }
+    }
 }
-	}
 
 	fmt.Println(allWs)
 }
 
 func main() {
 	socketPath := fmt.Sprintf("%s/hypr/%s/.socket2.sock", os.Getenv("XDG_RUNTIME_DIR"), os.Getenv("HYPRLAND_INSTANCE_SIGNATURE"))
-	conn, err := net.Dial("unix", socketPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	
+	var conn net.Conn
+    var err error
+    
+    for {
+        conn, err = net.Dial("unix", socketPath)
+        if err == nil {
+            break
+        }
+        time.Sleep(2 * time.Second)
+    }
 
 	Render()
 
