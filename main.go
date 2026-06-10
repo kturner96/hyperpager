@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 )
 
@@ -69,6 +70,10 @@ func Render() {
 		fmt.Println(err)
 		return
 	}
+
+	sort.Slice(workspaces, func(f, l int) bool {
+		return workspaces[f].Id < workspaces[l].Id
+	})
 
 	allWs := ""
 
