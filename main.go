@@ -74,21 +74,23 @@ func Render() {
 
 	for _, ws := range workspaces {
 		if activeWs == ws.Id {
-			allWs += fmt.Sprintf("[%d] ", ws.Id)
+    	allWs += fmt.Sprintf("● ")
 		} else {
-			allWs += fmt.Sprintf("%d ", ws.Id)
-		}
+    		allWs += fmt.Sprintf("○ ")
+}
 	}
 
 	fmt.Println(allWs)
 }
 
 func main() {
-	socketPath := fmt.Sprintf("/tmp/hypr/%s/.socket2.sock", os.Getenv("HYPRLAND_INSTANCE_SIGNATURE"))
+	socketPath := fmt.Sprintf("%s/hypr/%s/.socket2.sock", os.Getenv("XDG_RUNTIME_DIR"), os.Getenv("HYPRLAND_INSTANCE_SIGNATURE"))
 	conn, err := net.Dial("unix", socketPath)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	Render()
 
 	scanner := bufio.NewScanner(conn)
 
